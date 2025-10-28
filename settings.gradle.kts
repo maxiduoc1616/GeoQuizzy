@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Evaluacion2"
+rootProject.name = "GeoApp"
 include(":app")
- 
