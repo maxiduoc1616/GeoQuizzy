@@ -37,5 +37,24 @@ class HomeActivity : AppCompatActivity() {
         }
 
         // btn_settings (cuando lo agregues)
+        binding.btnShare.setOnClickListener {
+            shareApp()
+        }
+    }
+
+    private fun shareApp() {
+        val message = """
+            https://github.com/maxiduoc1616/Evaluacion2
+            🌍 Descarga la app.
+        """.trimIndent()
+
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, message)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, "Compartir usando...")
+        startActivity(shareIntent)
     }
 }

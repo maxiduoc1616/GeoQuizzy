@@ -1,5 +1,6 @@
 package com.example.geoapp
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -194,12 +195,29 @@ class QuizActivity : AppCompatActivity() {
     private fun endQuiz() {
         timer?.cancel() // Cancela el timer definitivamente
 
+        // Desbloquear logros
+        AchievementManager.unlockFirstQuiz(this) // Siempre que completes al menos un quiz
+
+        if (score == questions.size) {
+            AchievementManager.unlockPerfectScore(this)
+        }
+
+        // Para el logro de 50 preguntas, necesitarás un contador global (SharedPreferences)
+        val prefs = getSharedPreferences("achievements_prefs", Context.MODE_PRIVATE)
+        val totalQuestions = prefs.getInt("total_questions_answered", 0) + questions.size
+        prefs.edit().putInt("total_questions_answered", totalQuestions).apply()
+
+        if (totalQuestions >= 50) {
+            AchievementManager.unlock50Questions(this)
+        }
+
         val intent = Intent(this, ResultActivity::class.java)
         intent.putExtra("FINAL_SCORE", score)
         intent.putExtra("TOTAL_QUESTIONS", questions.size)
         startActivity(intent)
-        finish() // Cierra esta activity
+        finish()
     }
+
 
     // Funciones de ayuda
 

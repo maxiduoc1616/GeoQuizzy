@@ -17,31 +17,25 @@ object QuizGenerator {
     fun generateQuestions(countries: List<CountryResponse>): List<Question> {
         val questions = mutableListOf<Question>()
 
-        // 1. Filtra la lista de países
-        // Nos aseguramos de que tengan capital y un nombre común
         val validCountries = countries
-            .filter { it.capital != null && it.capital.isNotEmpty() && it.name.common.isNotEmpty() }
-            .shuffled() // Barajamos la lista de países
+            .filter { it.name.common.isNotEmpty() && it.continents.isNotEmpty() }
+            .shuffled()
 
-        if (validCountries.isEmpty()) {
-            return emptyList() // Devuelve lista vacía si la API no trajo datos válidos
+        if (validCountries.isEmpty()) return emptyList()
+
+        // 🔹 Mantén el total en 10 preguntas
+        repeat(NUM_QUESTIONS_TOTAL) {
+            // Elegimos tipo al azar: 0 = capital, 1 = bandera, 2 = no pertenece
+            when ((0..2).random()) {
+                0 -> questions.add(createCapitalQuestion(validCountries.shuffled()))
+                1 -> questions.add(createFlagQuestion(validCountries.shuffled()))
+                2 -> questions.add(createNotBelongQuestion(validCountries.shuffled()))
+            }
         }
 
-        // 2. Crear 5 preguntas de Capitales
-        for (i in 0 until (NUM_QUESTIONS_TOTAL / 2)) {
-            val question = createCapitalQuestion(validCountries.shuffled())
-            questions.add(question)
-        }
-
-        // 3. Crear 5 preguntas de Banderas
-        for (i in 0 until (NUM_QUESTIONS_TOTAL / 2)) {
-            val question = createFlagQuestion(validCountries.shuffled())
-            questions.add(question)
-        }
-
-        // 4. Barajamos el orden final de las preguntas
         return questions.shuffled()
     }
+
 
     /**
      * Crea una sola pregunta de "Capital".
@@ -87,6 +81,45 @@ object QuizGenerator {
             options = options,
             correctAnswer = correctAnswer,
             category = "BANDERAS"
+        )
+    }
+
+    private fun createNotBelongQuestion(countries: List<CountryResponse>): Question {
+        // Filtramos países con continente válido
+        val validCountries = countries.filter { it.continents.isNotEmpty() }
+        if (validCountries.size < NUM_OPTIONS + 1) {
+            // Evita errores si hay pocos datos
+            return createCapitalQuestion(countries)
+        }
+
+        // Elegimos un continente base (por ejemplo, África)
+        val baseCountry = validCountries.random()
+        val continent = baseCountry.continents.first()
+
+        // Tomamos 3 países del mismo continente
+        val sameContinent = validCountries
+            .filter { it.continents.contains(continent) }
+            .shuffled()
+            .take(NUM_OPTIONS - 1)
+
+        // Y 1 país de un continente diferente
+        val different = validCountries
+            .filter { !it.continents.contains(continent) }
+            .randomOrNull()
+
+        if (different == null || sameContinent.size < 3) {
+            return createCapitalQuestion(countries) // fallback
+        }
+
+        // Combinamos los países
+        val selectedCountries = (sameContinent + different).shuffled()
+
+        return Question(
+            text = "¿Qué país no pertenece a $continent?",
+            imageUrl = null,
+            options = selectedCountries.map { it.name.common },
+            correctAnswer = different.name.common,
+            category = "CONTINENTES"
         )
     }
 }
