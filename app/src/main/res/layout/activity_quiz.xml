@@ -65,7 +65,7 @@
         android:paddingEnd="12dp"
         android:paddingBottom="4dp"
         android:textAllCaps="true"
-        android:textColor="@color/design_default_color_primary"
+        android:textColor="#FA0CA3D6"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,33 +106,42 @@
         app:layout_constraintTop_toBottomOf="@id/tv_question"
         app:layout_constraintVertical_bias="0.2">
 
-        <Button
+        <!-- Opción 1 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_option1"
+            style="@style/Widget.App.Button.QuizOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
             tools:text="Opción A" />
 
-        <Button
+        <!-- Opción 2 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_option2"
+            style="@style/Widget.App.Button.QuizOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:layout_marginTop="8dp"
             tools:text="Opción B" />
 
-        <Button
+        <!-- Opción 3 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_option3"
+            style="@style/Widget.App.Button.QuizOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:layout_marginTop="8dp"
             tools:text="Opción C" />
 
-        <Button
+        <!-- Opción 4 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_option4"
+            style="@style/Widget.App.Button.QuizOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:layout_marginTop="8dp"
             tools:text="Opción D" />
     </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

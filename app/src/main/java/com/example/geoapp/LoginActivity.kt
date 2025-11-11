@@ -1,5 +1,13 @@
+// Esta actividad maneja el inicio de sesión del usuario en la aplicación GeoApp.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
 package com.example.geoapp
 
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -23,6 +31,9 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Función para aplicar degradado al título
+        setGradientToTitle()
+
         // Inicializa SharedPreferences
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -32,6 +43,28 @@ class LoginActivity : AppCompatActivity() {
         // Lógica del botón
         binding.btnLogin.setOnClickListener {
             handleLogin()
+        }
+    }
+
+    private fun setGradientToTitle() {
+        val textView = binding.tvTitleSuffix
+
+        textView.post {
+            val paint = textView.paint
+            val width = paint.measureText(textView.text.toString())
+
+            val color1 = Color.parseColor("#009B85")
+            val color2 = Color.parseColor("#8CC63F")
+
+            val textShader: Shader = LinearGradient(
+                0f, 0f, width, textView.textSize,
+                intArrayOf(color1, color2),
+                null, 
+                Shader.TileMode.CLAMP
+            )
+
+            textView.paint.shader = textShader
+            textView.invalidate()
         }
     }
 
@@ -62,6 +95,6 @@ class LoginActivity : AppCompatActivity() {
     private fun navigateToHome() {
         val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)
-        finish() // Cierra LoginActivity para que no pueda volver con el botón "atrás"
+        finish()
     }
 }

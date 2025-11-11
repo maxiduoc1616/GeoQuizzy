@@ -1,7 +1,14 @@
+// Esta actividad gestiona el quiz de preguntas geográficas. Es responsable de cargar las preguntas, mostrar cada pregunta,
+// manejar las respuestas del usuario, actualizar el puntaje y navegar a la pantalla de resultados al finalizar el quiz.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
 package com.example.geoapp
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -15,8 +22,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.geoapp.databinding.ActivityQuizBinding
 import com.example.geoapp.api.CountryRepository
+import com.example.geoapp.databinding.ActivityQuizBinding
 import com.example.geoapp.quiz.Question
 import com.example.geoapp.quiz.QuizGenerator
 import kotlinx.coroutines.launch
@@ -64,14 +71,13 @@ class QuizActivity : AppCompatActivity() {
      // Esta función carga los datos de la API usando Coroutines y el repositorio
 
     private fun loadQuizData() {
-        showLoading(true) // Muestra ProgressBar
+        showLoading(true) // Muestra la barrita de progreso
 
         lifecycleScope.launch {
             // Llama al Repositorio (Patrón del Profesor)
             val result = CountryRepository.fetchCountries()
 
             result.onSuccess { countries ->
-                // ¡Éxito! Genera las preguntas
                 questions = QuizGenerator.generateQuestions(countries)
 
                 if (questions.isEmpty()) {
@@ -84,7 +90,7 @@ class QuizActivity : AppCompatActivity() {
             }
 
             result.onFailure { error ->
-                // ¡Error de Red!
+                // En caso de que haya un error de Red
                 Log.e("QuizActivity", "Error al cargar países", error)
                 showError("Error de red. Intenta de nuevo.")
             }
@@ -137,7 +143,7 @@ class QuizActivity : AppCompatActivity() {
     // Esta función inicia el temporizador del quiz
 
     private fun startTimer() {
-        timer?.cancel() // Cancela cualquier timer anterior
+        timer?.cancel() // Cancela cualquier timer que haya quedado de antes
         timer = object : CountDownTimer(QUIZ_DURATION_MS, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 // Formatea el tiempo a "mm:ss"
@@ -202,10 +208,9 @@ class QuizActivity : AppCompatActivity() {
             AchievementManager.unlockPerfectScore(this)
         }
 
-        // Para el logro de 50 preguntas, necesitarás un contador global (SharedPreferences)
         val prefs = getSharedPreferences("achievements_prefs", Context.MODE_PRIVATE)
-        val totalQuestions = prefs.getInt("total_questions_answered", 0) + questions.size
-        prefs.edit().putInt("total_questions_answered", totalQuestions).apply()
+        val totalQuestions = prefs.getInt(AchievementManager.KEY_TOTAL_QUESTIONS_ANSWERED, 0) + questions.size
+        prefs.edit().putInt(AchievementManager.KEY_TOTAL_QUESTIONS_ANSWERED, totalQuestions).apply()
 
         if (totalQuestions >= 50) {
             AchievementManager.unlock50Questions(this)
@@ -237,14 +242,15 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun resetButtonColors() {
-        val defaultColor = ContextCompat.getColor(this, com.google.android.material.R.color.design_default_color_primary)
-        optionButtons.forEach { it.setBackgroundColor(defaultColor) }
+        optionButtons.forEach {
+            it.backgroundTintList = ContextCompat.getColorStateList(this, R.color.button_green_color)
+        }
     }
 
     private fun highlightButton(answerText: String, isCorrect: Boolean) {
         val button = optionButtons.find { it.text == answerText }
-        val color = if (isCorrect) Color.GREEN else Color.RED
-        button?.setBackgroundColor(color)
+        val color = if (isCorrect) Color.parseColor("#68B144") else Color.RED
+        button?.backgroundTintList = ColorStateList.valueOf(color)
     }
 
     override fun onDestroy() {

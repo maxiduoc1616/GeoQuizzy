@@ -1,23 +1,29 @@
-package com.example.geoapp.db // Asegúrate que este sea tu paquete
+// En este archivo se define el contrato de la base de datos para la aplicación GeoApp, incluyendo las tablas de puntuaciones y logros.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
+
+package com.example.geoapp.db
 
 import android.provider.BaseColumns
 
-// Objeto singleton para definir el esquema de la base de datos (contrato)
 object DatabaseContract {
 
-    // Constantes para la tabla Scores (Ranking)
+    // Definición de la tabla de puntuaciones
     object ScoreEntry : BaseColumns {
         const val TABLE_NAME = "scores"
         const val COLUMN_NAME_USERNAME = "username"
         const val COLUMN_NAME_SCORE = "score"
-        const val COLUMN_NAME_DATE = "date" // Usaremos un Long para la fecha (timestamp)
+        const val COLUMN_NAME_DATE = "date"
     }
 
-    // Constantes para la tabla Achievements (Logros)
+    // Definición de la tabla de logros
     object AchievementEntry : BaseColumns {
         const val TABLE_NAME = "achievements"
-        const val COLUMN_NAME_NAME = "name" // Nombre del logro (ej. "Cerebrito")
-        const val COLUMN_NAME_DESCRIPTION = "description" // Descripción (ej. "Consigue 100%")
-        const val COLUMN_NAME_IS_UNLOCKED = "is_unlocked" // 0 = false, 1 = true
+        const val COLUMN_NAME_NAME = "name"
+        const val COLUMN_NAME_DESCRIPTION = "description"
+        const val COLUMN_NAME_ICON_ID = "icon_id"
+        const val COLUMN_NAME_IS_UNLOCKED = "is_unlocked"
     }
 }

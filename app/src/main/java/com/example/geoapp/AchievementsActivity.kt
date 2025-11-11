@@ -1,87 +1,64 @@
+// Esta actividad muestra una lista de logros obtenidos por el usuario en la aplicación GeoApp.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
 package com.example.geoapp
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.geoapp.databinding.ActivityAchievementsBinding
-
-data class Achievement(
-    val id: Int,
-    val title: String,
-    val description: String,
-    var completed: Boolean
-)
+import com.example.geoapp.db.Achievement
 
 class AchievementsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAchievementsBinding
-    private lateinit var achievements: List<Achievement>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAchievementsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        enableEdgeToEdge()
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        // Configura la Toolbar como la ActionBar de la actividad.
+        setSupportActionBar(binding.toolbarAchievements)
+        // Muestra el botón de flecha para "volver atrás".
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Lista de logros
-        achievements = listOf(
-            Achievement(1, "Primeros Pasos", "Completa tu primer quiz", AchievementManager.isFirstQuizUnlocked(this)),
-            Achievement(2, "Cerebrito", "Consigue un 100% de aciertos (10/10)", AchievementManager.isPerfectScoreUnlocked(this)),
-            Achievement(3, "Trotamundos", "Responde 50 preguntas correctamente en total", AchievementManager.is50QuestionsUnlocked(this))
+        val achievements = listOf(
+            Achievement(
+                id = 1,
+                name = "Primeros Pasos",
+                description = "Completa tu primer quiz",
+                iconResId = R.drawable.ic_achievement_first_quiz,
+                isUnlocked = AchievementManager.isFirstQuizUnlocked(this)
+            ),
+            Achievement(
+                id = 2,
+                name = "Cerebrito",
+                description = "Consigue un 100% de aciertos",
+                iconResId = R.drawable.ic_achievement_perfect_score,
+                isUnlocked = AchievementManager.isPerfectScoreUnlocked(this)
+            ),
+            Achievement(
+                id = 3,
+                name = "Trotamundos",
+                description = "Responde 50 preguntas",
+                iconResId = R.drawable.ic_achievement_50_questions,
+                progress = AchievementManager.getQuestionsAnswered(this),
+                maxProgress = 50
+            )
         )
 
 
-        // Mostrar logros
-        showAchievements()
+        val adapter = AchievementAdapter(achievements)
+        binding.rvAchievements.layoutManager = LinearLayoutManager(this)
+        binding.rvAchievements.adapter = adapter
     }
 
-    private fun showAchievements() {
-        binding.achievementsContainer.removeAllViews()
-
-        // Botones de logros
-        for (achievement in achievements) {
-            val button = Button(this)
-            button.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(0, 8, 0, 8)
-            }
-
-            button.text = "${achievement.title} ${if (achievement.completed) "✅" else "❌"}"
-            button.setOnClickListener {
-                Toast.makeText(this, achievement.description, Toast.LENGTH_SHORT).show()
-            }
-
-            binding.achievementsContainer.addView(button)
-        }
-
-        // Botón para regresar al HomeActivity
-        val homeButton = Button(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, 16, 0, 16) }
-
-            text = "Regresar al inicio"
-            setOnClickListener {
-                startActivity(Intent(this@AchievementsActivity, HomeActivity::class.java))
-                finish()
-            }
-        }
-
-        binding.achievementsContainer.addView(homeButton)
+    override fun onSupportNavigateUp(): Boolean {
+        // Cierra la actividad actual y regresa a la pantalla anterior.
+        finish()
+        return true
     }
 }

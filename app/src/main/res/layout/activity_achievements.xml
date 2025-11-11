@@ -9,31 +9,52 @@
     android:padding="16dp"
     tools:context=".AchievementsActivity">
 
-    <!-- Título de logros -->
-    <TextView
-        android:id="@+id/tvAchievementsTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Mis Logros"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:padding="16dp"
+    <!-- Toolbar para la pantalla de logros -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_achievements"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="Mis Logros" />
 
-    <!-- Contenedor vertical para los logros -->
-    <LinearLayout
-        android:id="@+id/achievementsContainer"
+    <!-- CardView para encapsular la lista de logros -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_view_achievements"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/tvAchievementsTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_achievements">
 
+        <!-- RecyclerView para mostrar la lista de logros -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAchievements"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingVertical="8dp"
+            tools:listitem="@layout/item_achievement"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Mensaje para cuando no hay logros -->
+    <TextView
+        android:id="@+id/tv_empty_achievements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Aún no has desbloqueado logros.\n¡Sigue jugando!"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/card_view_achievements"
+        app:layout_constraintEnd_toEndOf="@id/card_view_achievements"
+        app:layout_constraintStart_toStartOf="@id/card_view_achievements"
+        app:layout_constraintTop_toTopOf="@id/card_view_achievements"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

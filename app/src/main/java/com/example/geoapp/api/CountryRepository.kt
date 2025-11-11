@@ -1,23 +1,19 @@
-package com.example.geoapp.api // Asegúrate que este sea tu paquete
+// En este archivo se define el repositorio Singleton para manejar las operaciones de red (API).
+// Sigue el patrón del proyecto de referencia.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
+package com.example.geoapp.api 
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * Repositorio Singleton para manejar las operaciones de red (API).
- * Sigue el patrón del proyecto de referencia:
- * - Es un 'object' (Singleton).
- * - Usa 'suspend' y 'withContext(Dispatchers.IO)' para ejecutar en hilo de fondo.
- * - Devuelve 'Result<T>' para un manejo seguro de errores.
- */
+// Repositorio Singleton que maneja las operaciones de red (API).
 object CountryRepository {
 
-    /**
-     * Obtiene la lista de todos los países desde la API.
-     * Esta es la única función que la UI (Activity/ViewModel) llamará.
-     */
+    // Función para obtener la lista de países desde la API.
     suspend fun fetchCountries(): Result<List<CountryResponse>> {
-        // Ejecuta la llamada a la red en el hilo de IO (Input/Output)
         return withContext(Dispatchers.IO) {
             try {
                 // 1. Llama al cliente de Retrofit
@@ -33,6 +29,4 @@ object CountryRepository {
             }
         }
     }
-
-    // NOTA: No necesitamos un "insertCountry" porque nuestra API es de solo lectura (GET).
 }

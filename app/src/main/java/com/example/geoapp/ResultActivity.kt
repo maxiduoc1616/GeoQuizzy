@@ -1,3 +1,9 @@
+// Esta actividad muestra el resultado del quiz al usuario, incluyendo su puntaje y un mensaje motivador.
+// Además, guarda el puntaje en la base de datos y desbloquea logros según el desempeño del usuario.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
 package com.example.geoapp
 
 import android.content.Intent
@@ -25,34 +31,32 @@ class ResultActivity : AppCompatActivity() {
         binding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. Recibir datos del Intent
+        // Recibir los datos del Intent
         val score = intent.getIntExtra("FINAL_SCORE", 0)
         val totalQuestions = intent.getIntExtra("TOTAL_QUESTIONS", 10)
 
-        // 2. Mostrar el puntaje
+        // Mostrar el puntaje y mensaje motivador
         binding.tvScore.text = "$score / $totalQuestions"
         binding.tvMotivationalMessage.text = getMotivationalMessage(score, totalQuestions)
 
-        // 3. Guardar datos en la BD (usando Coroutines)
+        // Guardar el puntaje y desbloquear logros
         saveResults(score, totalQuestions)
 
-        // 4. Configurar botones
+        // Configurar los listeners de los botones
         setupListeners()
     }
 
-    /**
-     * Guarda el puntaje y revisa los logros usando el Repositorio.
-     * ¡Esta es la lógica clave de la Fase 5!
-     */
+
+    // Guarda el puntaje en la base de datos y desbloquea logros según el desempeño del usuario
     private fun saveResults(score: Int, totalQuestions: Int) {
         // Obtener el nombre de usuario de SharedPreferences
         val prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE)
         val username = prefs.getString(LoginActivity.KEY_USERNAME, "Jugador") ?: "Jugador"
 
-        // Usar lifecycleScope para la Coroutine (como en el proyecto de referencia)
+        // Usar un coroutine para operaciones de base de datos
         lifecycleScope.launch {
 
-            // --- 1. Guardar el puntaje ---
+            // Guardar el puntaje
             val scoreResult = QuizRepository.insertScore(this@ResultActivity, username, score)
 
             scoreResult.onSuccess { rowId ->
@@ -62,21 +66,18 @@ class ResultActivity : AppCompatActivity() {
                 Toast.makeText(this@ResultActivity, "Error al guardar puntaje", Toast.LENGTH_SHORT).show()
             }
 
-            // --- 2. Desbloquear Logro: "Primeros Pasos" (ID 1) ---
-            // Siempre se desbloquea al terminar un quiz
+            // Desbloquear logros según el desempeño
             val firstQuizResult = QuizRepository.unlockAchievement(this@ResultActivity, ACHIEVEMENT_ID_FIRST_QUIZ)
 
             firstQuizResult.onSuccess { rowsAffected ->
                 if (rowsAffected > 0) {
                     Log.d("ResultActivity", "Logro 1 'Primeros Pasos' desbloqueado")
-                    // (Opcional) Mostrar un Toast de "Logro desbloqueado"
                 }
             }.onFailure { e ->
                 Log.e("ResultActivity", "Error al desbloquear logro 1", e)
             }
 
-            // --- 3. Desbloquear Logro: "Cerebrito" (ID 2) ---
-            // Solo si el puntaje es perfecto
+            // Desbloquear logro por puntaje perfecto (Cerebrito)
             if (score == totalQuestions && totalQuestions > 0) {
                 val perfectScoreResult = QuizRepository.unlockAchievement(this@ResultActivity, ACHIEVEMENT_ID_PERFECT_SCORE)
 
@@ -92,9 +93,7 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Devuelve un mensaje motivador basado en el puntaje.
-     */
+    // Genera un mensaje motivacional basado en el puntaje obtenido
     private fun getMotivationalMessage(score: Int, total: Int): String {
         return when {
             score == total -> "¡Perfecto! ¡Eres un genio!"
@@ -104,9 +103,7 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Configura los listeners para los botones de navegación.
-     */
+    // Configura los listeners para los botones de navegación.
     private fun setupListeners() {
         binding.btnRestartQuiz.setOnClickListener {
             // Vuelve a iniciar el quiz

@@ -7,5 +7,13 @@
         <item name="fontFamily">@font/geist_font_family</item>
     </style>
 
+    <!-- Estilo para los botones de opciones del Quiz -->
+    <style name="Widget.App.Button.QuizOption" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/button_green_color</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
     <style name="Theme.GeoApp" parent="Base.Theme.GeoApp" />
 </resources>

@@ -1,3 +1,8 @@
+// Esta actividad es la pantalla principal después de iniciar sesión en la aplicación GeoApp.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
 package com.example.geoapp
 
 import android.content.Intent
@@ -19,8 +24,12 @@ class HomeActivity : AppCompatActivity() {
         val username = prefs.getString(LoginActivity.KEY_USERNAME, "Jugador")
         binding.tvWelcome.text = "¡Hola, $username!"
 
-        // Configurar los listeners de los botones
         setupListeners()
+
+        binding.fabSettings.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupListeners() {
@@ -36,13 +45,13 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, AchievementsActivity::class.java))
         }
 
-        // btn_settings (cuando lo agregues)
         binding.btnShare.setOnClickListener {
             shareApp()
         }
     }
 
     private fun shareApp() {
+        // Crea un Intent para compartir el enlace de la aplicación (actualmente se comparte solo el repo de GitHub)
         val message = """
             https://github.com/maxiduoc1616/Evaluacion2
             🌍 Descarga la app.

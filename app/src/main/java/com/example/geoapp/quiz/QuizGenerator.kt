@@ -1,19 +1,20 @@
+
+// Esta es la implementación del generador de preguntas para el quiz de geografía. Se crean preguntas de capitales, banderas y continentes.
+
+// Evaluación Parcial 2
+// Integrantes: Diego Rodríguez, Maximiliano Gangas, Bastian González
+
 package com.example.geoapp.quiz
 
 import com.example.geoapp.api.CountryResponse
 
-/**
- * Objeto Singleton que genera una lista de preguntas
- * a partir de la respuesta de la API de países.
- */
+// Objeto responsable de generar preguntas para el quiz
 object QuizGenerator {
 
     private const val NUM_QUESTIONS_TOTAL = 10
     private const val NUM_OPTIONS = 4
 
-    /**
-     * Función principal. Crea una lista de 10 preguntas (5 de capitales, 5 de banderas).
-     */
+    // Genera una lista de preguntas a partir de una lista de países obtenidos de la API
     fun generateQuestions(countries: List<CountryResponse>): List<Question> {
         val questions = mutableListOf<Question>()
 
@@ -23,9 +24,8 @@ object QuizGenerator {
 
         if (validCountries.isEmpty()) return emptyList()
 
-        // 🔹 Mantén el total en 10 preguntas
         repeat(NUM_QUESTIONS_TOTAL) {
-            // Elegimos tipo al azar: 0 = capital, 1 = bandera, 2 = no pertenece
+            // Selecciona aleatoriamente el tipo de pregunta a crear
             when ((0..2).random()) {
                 0 -> questions.add(createCapitalQuestion(validCountries.shuffled()))
                 1 -> questions.add(createFlagQuestion(validCountries.shuffled()))
@@ -37,16 +37,13 @@ object QuizGenerator {
     }
 
 
-    /**
-     * Crea una sola pregunta de "Capital".
-     */
+    // Crea una sola pregunta de "Capital"
     private fun createCapitalQuestion(countries: List<CountryResponse>): Question {
-        // Obtenemos 4 países al azar de la lista ya barajada
         val selectedCountries = countries.take(NUM_OPTIONS)
 
-        // El primero de la lista será la respuesta correcta
+        // El primero es la respuesta correcta
         val correctCountry = selectedCountries[0]
-        val correctAnswer = correctCountry.capital!![0] // Sabemos que no es nulo por el filtro
+        val correctAnswer = correctCountry.capital!![0] // Aseguramos que capital no sea nulo
 
         // Las opciones son las capitales de los 4 países
         val options = selectedCountries.map { it.capital!![0] }.shuffled() // Barajamos las opciones
@@ -60,12 +57,9 @@ object QuizGenerator {
         )
     }
 
-    /**
-     * Crea una sola pregunta de "Bandera".
-     */
+    // Crea una sola pregunta de "Banderas"
     private fun createFlagQuestion(countries: List<CountryResponse>): Question {
-        // Obtenemos 4 países al azar
-        // Usamos .drop(NUM_OPTIONS) para intentar no repetir los de las capitales
+        // Aquí asumimos que todos los países tienen una bandera válida
         val selectedCountries = countries.drop(NUM_OPTIONS).take(NUM_OPTIONS)
 
         // El primero es la respuesta correcta
@@ -84,6 +78,7 @@ object QuizGenerator {
         )
     }
 
+    // Crea una sola pregunta de "No Pertenece"
     private fun createNotBelongQuestion(countries: List<CountryResponse>): Question {
         // Filtramos países con continente válido
         val validCountries = countries.filter { it.continents.isNotEmpty() }
