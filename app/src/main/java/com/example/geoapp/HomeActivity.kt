@@ -53,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
     private fun shareApp() {
         // Crea un Intent para compartir el enlace de la aplicación (actualmente se comparte solo el repo de GitHub)
         val message = """
-            https://github.com/maxiduoc1616/Evaluacion2
+            https://github.com/maxiduoc1616/GeoQuizzy
             🌍 Descarga la app.
         """.trimIndent()
 
