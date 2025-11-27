@@ -46,20 +46,5 @@ class SettingsActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-
-        // Cargar el nombre de usuario actual
-        val currentUsername = sharedPreferences.getString(KEY_USERNAME, "")
-        binding.etUsername.setText(currentUsername)
-
-        // Maneja el clic en el botón de guardar nombre de usuario
-        binding.btnSaveUsername.setOnClickListener {
-            val newUsername = binding.etUsername.text.toString().trim()
-            if (newUsername.isNotEmpty()) {
-                sharedPreferences.edit().putString(KEY_USERNAME, newUsername).apply()
-                Toast.makeText(this, "Nombre guardado", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "El nombre no puede estar vacío", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -68,4 +69,9 @@ dependencies {
 
     // Glide (para cargar imágenes desde una URL)
     implementation("com.github.bumptech.glide:glide:5.0.5")
+
+    // Firebase & Google Auth
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
 }

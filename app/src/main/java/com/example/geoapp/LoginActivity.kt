@@ -15,11 +15,19 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.geoapp.databinding.ActivityLoginBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var auth: FirebaseAuth
 
     companion object {
         const val PREFS_NAME = "GeoQuizPrefs"
@@ -40,9 +48,17 @@ class LoginActivity : AppCompatActivity() {
         // Revisa si el usuario ya existe
         checkIfUserIsLoggedIn()
 
-        // Lógica del botón
-        binding.btnLogin.setOnClickListener {
-            handleLogin()
+        // Configurar Google Sign In
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+        auth = FirebaseAuth.getInstance()
+
+        binding.btnGoogleSignIn.setOnClickListener {
+            signInWithGoogle()
         }
     }
 
@@ -76,20 +92,44 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleLogin() {
-        val username = binding.etUsername.text.toString().trim()
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        launcher.launch(signInIntent)
+    }
 
-        if (username.isEmpty()) {
-            Toast.makeText(this, "Por favor, ingresa un nombre", Toast.LENGTH_SHORT).show()
-        } else {
-            // Guardar el nombre de usuario
-            sharedPreferences.edit().apply {
-                putString(KEY_USERNAME, username)
-                apply()
+    private val launcher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            // Navegar al Home
-            navigateToHome()
         }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    val user = auth.currentUser
+                    val username = user?.displayName ?: "User"
+                    
+                    // Guardar el nombre de usuario en SharedPreferences
+                    sharedPreferences.edit().apply {
+                        putString(KEY_USERNAME, username)
+                        apply()
+                    }
+                    
+                    navigateToHome()
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun navigateToHome() {

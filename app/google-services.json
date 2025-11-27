@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "776667711318",
+    "project_id": "geoquizzy-c5aae",
+    "storage_bucket": "geoquizzy-c5aae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776667711318:android:6dc5b0852bc0889ba978f7",
+        "android_client_info": {
+          "package_name": "com.example.geoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776667711318-l25fm4fqihc9gpiht6qle3l0odjr03m8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geoapp",
+            "certificate_hash": "4023caa2540f5da3dcba853216a7f29fd6508a5d"
+          }
+        },
+        {
+          "client_id": "776667711318-lp33gieqm4j6v138qsecb4bvopougk1e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQBC0plyd_FTEp5D3wiGcRTRNg2xcdrK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776667711318-lp33gieqm4j6v138qsecb4bvopougk1e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
