@@ -24,21 +24,27 @@
 
         <activity
             android:name=".ResultActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".AchievementsActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".RankingActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".QuizActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".HomeActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,11 +53,25 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
         </activity>
         <!-- Dentro de la etiqueta <application> -->
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".SettingsActivity"
+            android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".CountryListActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".StudyListActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".DifficultySelectionActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
     </application>
 
 </manifest>

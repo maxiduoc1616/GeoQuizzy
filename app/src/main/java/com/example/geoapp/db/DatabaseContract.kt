@@ -26,4 +26,11 @@ object DatabaseContract {
         const val COLUMN_NAME_ICON_ID = "icon_id"
         const val COLUMN_NAME_IS_UNLOCKED = "is_unlocked"
     }
+
+    // Definición de la tabla de Lista de Estudio
+    object StudyListEntry : BaseColumns {
+        const val TABLE_NAME = "study_list"
+        const val COLUMN_NAME_COUNTRY_NAME = "country_name"
+        const val COLUMN_NAME_PRIORITY = "priority"
+    }
 }

@@ -26,7 +26,10 @@ import com.example.geoapp.api.CountryRepository
 import com.example.geoapp.databinding.ActivityQuizBinding
 import com.example.geoapp.quiz.Question
 import com.example.geoapp.quiz.QuizGenerator
+import com.example.geoapp.db.QuizDbHelper
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class QuizActivity : AppCompatActivity() {
@@ -37,6 +40,7 @@ class QuizActivity : AppCompatActivity() {
     private var questions: List<Question> = emptyList()
     private var currentQuestionIndex = 0
     private var score = 0
+    private var lives = 3
     private var timer: CountDownTimer? = null
 
     // Lista de botones
@@ -55,6 +59,11 @@ class QuizActivity : AppCompatActivity() {
         optionButtons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
 
         setupListeners()
+        setupListeners()
+        
+        lives = intent.getIntExtra("EXTRA_LIVES", 3)
+        updateLivesUI()
+        
         loadQuizData()
     }
 
@@ -78,7 +87,25 @@ class QuizActivity : AppCompatActivity() {
             val result = CountryRepository.fetchCountries()
 
             result.onSuccess { countries ->
-                questions = QuizGenerator.generateQuestions(countries)
+                // Filtrar si es modo estudio
+                val mode = intent.getStringExtra("EXTRA_MODE")
+                val finalCountries = if (mode == "STUDY") {
+                    val dbHelper = QuizDbHelper(this@QuizActivity)
+                    val studyList = withContext(Dispatchers.IO) {
+                        dbHelper.getStudyList()
+                    }
+                    val studyNames = studyList.map { it.countryName }.toSet()
+                    countries.filter { studyNames.contains(it.name.common) }
+                } else {
+                    countries
+                }
+
+                if (mode == "STUDY" && finalCountries.size < 4) {
+                    showError("Necesitas al menos 4 países en tu lista para practicar.")
+                    return@onSuccess
+                }
+
+                questions = QuizGenerator.generateQuestions(finalCountries)
 
                 if (questions.isEmpty()) {
                     showError("No se pudieron generar preguntas.")
@@ -174,12 +201,33 @@ class QuizActivity : AppCompatActivity() {
             // Respuesta incorrecta
             highlightButton(selectedAnswer, false) // Pinta la opción incorrecta de rojo
             highlightButton(correct, true) // Pinta la opción correcta de verde
+            
+            lives--
+            updateLivesUI()
+            
+            if (lives == 0) {
+                timer?.cancel()
+                Toast.makeText(this, "¡Te quedaste sin vidas!", Toast.LENGTH_LONG).show()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    endQuiz()
+                }, 1000)
+                return
+            }
         }
 
         // Espera 1 segundo antes de pasar a la siguiente pregunta
         Handler(Looper.getMainLooper()).postDelayed({
             nextQuestion()
         }, ANSWER_DELAY_MS)
+    }
+
+    private fun updateLivesUI() {
+        // Muestra corazones según las vidas
+        val hearts = StringBuilder()
+        repeat(lives) {
+            hearts.append("❤")
+        }
+        binding.tvLives.text = hearts.toString()
     }
 
 

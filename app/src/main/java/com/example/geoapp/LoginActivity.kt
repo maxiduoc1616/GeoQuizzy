@@ -60,6 +60,14 @@ class LoginActivity : AppCompatActivity() {
         binding.btnGoogleSignIn.setOnClickListener {
             signInWithGoogle()
         }
+
+        if (BuildConfig.DEBUG) {
+            binding.btnDebugLogin.visibility = android.view.View.VISIBLE
+            binding.btnDebugLogin.setOnClickListener {
+                sharedPreferences.edit().putString(KEY_USERNAME, "TestUser").apply()
+                navigateToHome()
+            }
+        }
     }
 
     private fun setGradientToTitle() {

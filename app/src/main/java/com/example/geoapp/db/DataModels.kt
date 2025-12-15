@@ -25,3 +25,9 @@ data class Achievement(
     val progress: Int = 0,
     val maxProgress: Int = 100
 )
+
+// Modelo de datos para un item en la lista de estudio
+data class StudyItem(
+    val countryName: String, // Nombre del país (clave única)
+    val priority: Int // 1: Baja, 2: Media, 3: Alta
+)

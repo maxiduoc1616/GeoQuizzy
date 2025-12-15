@@ -30,6 +30,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -38,6 +39,12 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    
+    testOptions {
+        unitTests.all {
+            it.useTestNG()
+        }
     }
 }
 
@@ -74,4 +81,10 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
+
+    // Appium & Cucumber & TestNG
+    testImplementation("io.appium:java-client:8.6.0")
+    testImplementation("io.cucumber:cucumber-java:7.15.0")
+    testImplementation("io.cucumber:cucumber-testng:7.15.0")
+    testImplementation("org.testng:testng:7.8.0")
 }

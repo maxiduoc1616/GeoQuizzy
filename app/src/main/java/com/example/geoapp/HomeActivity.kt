@@ -34,11 +34,15 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnStartQuiz.setOnClickListener {
-            startActivity(Intent(this, QuizActivity::class.java))
+            startActivity(Intent(this, DifficultySelectionActivity::class.java))
         }
 
         binding.btnRanking.setOnClickListener {
             startActivity(Intent(this, RankingActivity::class.java))
+        }
+
+        binding.btnStudyList.setOnClickListener {
+            startActivity(Intent(this, StudyListActivity::class.java))
         }
 
         binding.btnAchievements.setOnClickListener {

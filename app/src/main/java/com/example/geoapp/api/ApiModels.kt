@@ -15,7 +15,9 @@ data class CountryResponse(
     @field:Json(name = "name") val name: Name,
     @field:Json(name = "capital") val capital: List<String>?, // La capital es una lista
     @field:Json(name = "flags") val flags: Flag,
-    @field:Json(name = "continents") val continents: List<String>
+    @field:Json(name = "continents") val continents: List<String>,
+    @field:Json(name = "population") val population: Long?,
+    @field:Json(name = "area") val area: Double?
 )
 
 // Objeto anidado para el nombre del país

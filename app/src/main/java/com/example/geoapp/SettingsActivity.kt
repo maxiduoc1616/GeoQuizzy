@@ -46,5 +46,34 @@ class SettingsActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
+        // setup logout
+        binding.btnSignOut.setOnClickListener {
+            signOut()
+        }
+    }
+
+    private fun signOut() {
+        // 1. Limpiar SharedPreferences de Login
+        val loginPrefs = getSharedPreferences("GeoQuizPrefs", Context.MODE_PRIVATE)
+        loginPrefs.edit().clear().apply()
+
+        // 2. Cerrar sesión de Firebase
+        val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+        auth.signOut()
+
+        // 3. Cerrar sesión de Google Client y navegar
+        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(this, gso)
+        googleSignInClient.signOut().addOnCompleteListener(this) {
+            // 4. Navegar al Login y borrar historial
+            val intent = android.content.Intent(this, LoginActivity::class.java)
+            intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 }

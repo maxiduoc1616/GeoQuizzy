@@ -13,6 +13,13 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 import com.example.geoapp.db.DatabaseContract.AchievementEntry
 import com.example.geoapp.db.DatabaseContract.ScoreEntry
+import com.example.geoapp.db.DatabaseContract.StudyListEntry
+
+// Nueva tabla para lista de estudio
+private val SQL_CREATE_STUDY_LIST_TABLE =
+    "CREATE TABLE ${StudyListEntry.TABLE_NAME} (" +
+            "${StudyListEntry.COLUMN_NAME_COUNTRY_NAME} TEXT PRIMARY KEY," +
+            "${StudyListEntry.COLUMN_NAME_PRIORITY} INTEGER)"
 
 // Nueva tabla para puntajes
 private val SQL_CREATE_SCORES_TABLE =
@@ -34,6 +41,7 @@ private val SQL_CREATE_ACHIEVEMENTS_TABLE =
 // Sentencias SQL para eliminar las tablas
 private val SQL_DELETE_SCORES_TABLE = "DROP TABLE IF EXISTS ${ScoreEntry.TABLE_NAME}"
 private val SQL_DELETE_ACHIEVEMENTS_TABLE = "DROP TABLE IF EXISTS ${AchievementEntry.TABLE_NAME}"
+private val SQL_DELETE_STUDY_LIST_TABLE = "DROP TABLE IF EXISTS ${StudyListEntry.TABLE_NAME}"
 
 // Clase que ayuda a manejar la base de datos SQLite
 class QuizDbHelper(context: Context) :
@@ -42,7 +50,7 @@ class QuizDbHelper(context: Context) :
     // Versión y nombre de la base de datos
     companion object {
         // Incrementa la versión para forzar onUpgrade y recrear la tabla con el nuevo campo.
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 3
         const val DATABASE_NAME = "GeoQuiz.db"
     }
 
@@ -50,6 +58,7 @@ class QuizDbHelper(context: Context) :
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(SQL_CREATE_SCORES_TABLE)
         db.execSQL(SQL_CREATE_ACHIEVEMENTS_TABLE)
+        db.execSQL(SQL_CREATE_STUDY_LIST_TABLE)
         prePopulateAchievements(db)
     }
 
@@ -57,6 +66,7 @@ class QuizDbHelper(context: Context) :
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL(SQL_DELETE_SCORES_TABLE)
         db.execSQL(SQL_DELETE_ACHIEVEMENTS_TABLE)
+        db.execSQL(SQL_DELETE_STUDY_LIST_TABLE)
         onCreate(db)
     }
 
@@ -150,5 +160,76 @@ class QuizDbHelper(context: Context) :
         return db.update(
             AchievementEntry.TABLE_NAME, values, selection, selectionArgs
         )
+    }
+
+    // --- MÉTODOS CRUD PARA LISTA DE ESTUDIO ---
+
+    // Insertar un país en la lista de estudio
+    fun insertStudyItem(countryName: String, priority: Int): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(StudyListEntry.COLUMN_NAME_COUNTRY_NAME, countryName)
+            put(StudyListEntry.COLUMN_NAME_PRIORITY, priority)
+        }
+        return db.insert(StudyListEntry.TABLE_NAME, null, values)
+    }
+
+    // Obtener toda la lista de estudio
+    fun getStudyList(): List<StudyItem> {
+        val list = mutableListOf<StudyItem>()
+        val db = this.readableDatabase
+        val cursor = db.query(
+            StudyListEntry.TABLE_NAME, null, null, null, null, null,
+            "${StudyListEntry.COLUMN_NAME_PRIORITY} DESC" // Ordenar por prioridad (Alta primero)
+        )
+        with(cursor) {
+            while (moveToNext()) {
+                val item = StudyItem(
+                    countryName = getString(getColumnIndexOrThrow(StudyListEntry.COLUMN_NAME_COUNTRY_NAME)),
+                    priority = getInt(getColumnIndexOrThrow(StudyListEntry.COLUMN_NAME_PRIORITY))
+                )
+                list.add(item)
+            }
+        }
+        cursor.close()
+        return list
+    }
+
+    // Eliminar un país de la lista de estudio
+    fun deleteStudyItem(countryName: String): Int {
+        val db = this.writableDatabase
+        val selection = "${StudyListEntry.COLUMN_NAME_COUNTRY_NAME} = ?"
+        val selectionArgs = arrayOf(countryName)
+        return db.delete(StudyListEntry.TABLE_NAME, selection, selectionArgs)
+    }
+
+    // Actualizar la prioridad de un país
+    fun updateStudyItemPriority(countryName: String, priority: Int): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(StudyListEntry.COLUMN_NAME_PRIORITY, priority)
+        }
+        val selection = "${StudyListEntry.COLUMN_NAME_COUNTRY_NAME} = ?"
+        val selectionArgs = arrayOf(countryName)
+        return db.update(StudyListEntry.TABLE_NAME, values, selection, selectionArgs)
+    }
+
+    // Verificar si un país ya está en la lista
+    fun isCountryInStudyList(countryName: String): Boolean {
+        val db = this.readableDatabase
+        val selection = "${StudyListEntry.COLUMN_NAME_COUNTRY_NAME} = ?"
+        val selectionArgs = arrayOf(countryName)
+        val cursor = db.query(
+            StudyListEntry.TABLE_NAME,
+            arrayOf(StudyListEntry.COLUMN_NAME_COUNTRY_NAME),
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        val exists = cursor.count > 0
+        cursor.close()
+        return exists
     }
 }
